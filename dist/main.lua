@@ -3,16 +3,18 @@
     | | /| / (_)__  ___/ / / / /  _/
     | |/ |/ / / _ \/ _  / /_/ // /  
     |__/|__/_/_//_/\_,_/\____/___/
-    
+
     v1.6.62  |  2025-11-22  |  Roblox UI Library for scripts
-    
+
     To view the source code, see the `src/` folder on the official GitHub repository.
-    
+
     Author: Footagesus (Footages, .ftgs, oftgs)
     Github: https://github.com/Footagesus/WindUI
     Discord: https://discord.gg/ftgs-development-hub-1300692552005189632
     License: MIT
 ]]
+
+if not game:IsLoaded() then game.Loaded:Wait() end
 
 local a a={cache={}, load=function(b)if not a.cache[b]then a.cache[b]={c=a[b]()}end return a.cache[b].c end}do function a.a()return{
 
@@ -74,13 +76,13 @@ local h=b(game:GetService"HttpService")local i=
 
 d.Heartbeat
 
-local j="https://raw.githubusercontent.com/Footagesus/Icons/main/Main-v2.lua"
+local j="https://raw.githubusercontent.com/deividcomsono/lucide-roblox-direct/refs/heads/main/source.lua"
 
-local l=loadstring(
-game.HttpGetAsync and game:HttpGetAsync(j)
-or h:GetAsync(j)
-)()
-l.SetIconsType"lucide"
+local _lOk,l=pcall(function()
+local _src=game.HttpGetAsync and game:HttpGetAsync(j)or h:GetAsync(j)
+return loadstring(_src)()
+end)
+if not _lOk or type(l)~="table" or not l.GetAsset then l=nil end
 
 local m
 
@@ -208,8 +210,6 @@ local u,v=pcall(r,...)
 if not u then
 if m and m.Window and m.Window.Debug then local
 x, z=v:find":%d+: "
-
-warn("[ WindUI: DEBUG Mode ] "..v)
 
 return m:Notify{
 Title="DEBUG Mode: Error",
@@ -489,12 +489,13 @@ p.UpdateLang()
 end
 
 function p.Icon(r,u)
-return l.Icon(r,nil,u~=false)
+if u==false or not l then return nil end
+local ok,data=pcall(l.GetAsset,r)
+if not(ok and data)then return nil end
+return setmetatable({Url=data.Url,ImageRectOffset=data.ImageRectOffset,ImageRectSize=data.ImageRectSize},{__index=function(t,k)if k==1 then return data.Url elseif k==2 then return{ImageRectPosition=data.ImageRectOffset,ImageRectSize=data.ImageRectSize}end end})
 end
 
-function p.AddIcons(r,u)
-return l.AddIcons(r,u)
-end
+function p.AddIcons(r,u)end
 
 function p.New(r,u,v)
 local x=Instance.new(r)
@@ -689,7 +690,6 @@ return J
 end
 
 
-l.Init(r,"Icon")
 
 
 function p.SanitizeFilename(v)
@@ -728,17 +728,10 @@ CornerRadius=UDim.new(0,B)
 })
 })
 if p.Icon(v)then
-L.ImageLabel:Destroy()
-
-local M=l.Image{
-Icon=v,
-Size=UDim2.new(1,0,1,0),
-Colors={
-(G and(J or"Icon")or false),
-"Button"
-}
-}.IconFrame
-M.Parent=L
+local _id=p.Icon(v)
+L.ImageLabel.Image=_id.Url
+L.ImageLabel.ImageRectOffset=_id.ImageRectOffset
+L.ImageLabel.ImageRectSize=_id.ImageRectSize
 elseif string.find(v,"http")then
 local M="WindUI/"..C.."/assets/."..F.."-"..x..".png"
 local N,O=pcall(function()
@@ -755,7 +748,6 @@ local O,P=pcall(getcustomasset,M)
 if O then
 L.ImageLabel.Image=P
 else
-warn(string.format("[ WindUI.Creator ] Failed to load custom asset '%s': %s",M,tostring(P)))
 L:Destroy()
 
 return
@@ -763,8 +755,6 @@ end
 end)
 end)
 if not N then
-warn("[ WindUI.Creator ]  '"..identifyexecutor().."' doesnt support the URL Images. Error: "..O)
-
 L:Destroy()
 end
 elseif v==""then
@@ -1423,7 +1413,6 @@ else
 return false,"JSON decode error"
 end
 else
-warn("[Pelinda Ov2.5] HTTP request was not successful. Code: "..tostring(ak.StatusCode).." Message: "..ak.StatusMessage)
 return false,"HTTP request failed: "..ak.StatusMessage
 end
 else
@@ -1995,517 +1984,7 @@ return ag
 end
 
 return ad end function a.m()
-local aa={}
-
-
-local ab=a.load'b'
-local ac=ab.New
-local ad=ab.Tween
-
-local ae=a.load'j'.New
-local af=a.load'k'.New
-
-function aa.new(ag,ah,ai,aj)
-local ak=a.load'l'.Init(nil,ag.WindUI.ScreenGui.KeySystem)
-local al=ak.Create(true)
-
-local am={}
-
-local an
-
-local ao=(ag.KeySystem.Thumbnail and ag.KeySystem.Thumbnail.Width)or 200
-
-local ap=430
-if ag.KeySystem.Thumbnail and ag.KeySystem.Thumbnail.Image then
-ap=430+(ao/2)
-end
-
-al.UIElements.Main.AutomaticSize="Y"
-al.UIElements.Main.Size=UDim2.new(0,ap,0,0)
-
-local aq
-
-if ag.Icon then
-
-aq=ab.Image(
-ag.Icon,
-ag.Title..":"..ag.Icon,
-0,
-"Temp",
-"KeySystem",
-ag.IconThemed
-)
-aq.Size=UDim2.new(0,24,0,24)
-aq.LayoutOrder=-1
-end
-
-local ar=ac("TextLabel",{
-AutomaticSize="XY",
-BackgroundTransparency=1,
-Text=ag.KeySystem.Title or ag.Title,
-FontFace=Font.new(ab.Font,Enum.FontWeight.SemiBold),
-ThemeTag={
-TextColor3="Text",
-},
-TextSize=20
-})
-
-local as=ac("TextLabel",{
-AutomaticSize="XY",
-BackgroundTransparency=1,
-Text="Key System",
-AnchorPoint=Vector2.new(1,0.5),
-Position=UDim2.new(1,0,0.5,0),
-TextTransparency=1,
-FontFace=Font.new(ab.Font,Enum.FontWeight.Medium),
-ThemeTag={
-TextColor3="Text",
-},
-TextSize=16
-})
-
-local at=ac("Frame",{
-BackgroundTransparency=1,
-AutomaticSize="XY",
-},{
-ac("UIListLayout",{
-Padding=UDim.new(0,14),
-FillDirection="Horizontal",
-VerticalAlignment="Center"
-}),
-aq,ar
-})
-
-local au=ac("Frame",{
-AutomaticSize="Y",
-Size=UDim2.new(1,0,0,0),
-BackgroundTransparency=1,
-},{
-
-
-
-
-
-at,as,
-})
-
-local av=af("Enter Key","key",nil,"Input",function(av)
-an=av
-end)
-
-local aw
-if ag.KeySystem.Note and ag.KeySystem.Note~=""then
-aw=ac("TextLabel",{
-Size=UDim2.new(1,0,0,0),
-AutomaticSize="Y",
-FontFace=Font.new(ab.Font,Enum.FontWeight.Medium),
-TextXAlignment="Left",
-Text=ag.KeySystem.Note,
-TextSize=18,
-TextTransparency=.4,
-ThemeTag={
-TextColor3="Text",
-},
-BackgroundTransparency=1,
-RichText=true,
-TextWrapped=true,
-})
-end
-
-local ax=ac("Frame",{
-Size=UDim2.new(1,0,0,42),
-BackgroundTransparency=1,
-},{
-ac("Frame",{
-BackgroundTransparency=1,
-AutomaticSize="X",
-Size=UDim2.new(0,0,1,0),
-},{
-ac("UIListLayout",{
-Padding=UDim.new(0,9),
-FillDirection="Horizontal",
-})
-})
-})
-
-
-local ay
-if ag.KeySystem.Thumbnail and ag.KeySystem.Thumbnail.Image then
-local az
-if ag.KeySystem.Thumbnail.Title then
-az=ac("TextLabel",{
-Text=ag.KeySystem.Thumbnail.Title,
-ThemeTag={
-TextColor3="Text",
-},
-TextSize=18,
-FontFace=Font.new(ab.Font,Enum.FontWeight.Medium),
-BackgroundTransparency=1,
-AutomaticSize="XY",
-AnchorPoint=Vector2.new(0.5,0.5),
-Position=UDim2.new(0.5,0,0.5,0),
-})
-end
-ay=ac("ImageLabel",{
-Image=ag.KeySystem.Thumbnail.Image,
-BackgroundTransparency=1,
-Size=UDim2.new(0,ao,1,-12),
-Position=UDim2.new(0,6,0,6),
-Parent=al.UIElements.Main,
-ScaleType="Crop"
-},{
-az,
-ac("UICorner",{
-CornerRadius=UDim.new(0,20),
-})
-})
-end
-
-ac("Frame",{
-
-Size=UDim2.new(1,ay and-ao or 0,1,0),
-Position=UDim2.new(0,ay and ao or 0,0,0),
-BackgroundTransparency=1,
-Parent=al.UIElements.Main
-},{
-ac("Frame",{
-
-Size=UDim2.new(1,0,1,0),
-BackgroundTransparency=1,
-},{
-ac("UIListLayout",{
-Padding=UDim.new(0,18),
-FillDirection="Vertical",
-}),
-au,
-aw,
-av,
-ax,
-ac("UIPadding",{
-PaddingTop=UDim.new(0,16),
-PaddingLeft=UDim.new(0,16),
-PaddingRight=UDim.new(0,16),
-PaddingBottom=UDim.new(0,16),
-})
-}),
-})
-
-
-
-
-
-local az=ae("Exit","log-out",function()
-al:Close()()
-end,"Tertiary",ax.Frame)
-
-if ay then
-az.Parent=ay
-az.Size=UDim2.new(0,0,0,42)
-az.Position=UDim2.new(0,10,1,-10)
-az.AnchorPoint=Vector2.new(0,1)
-end
-
-if ag.KeySystem.URL then
-ae("Get key","key",function()
-setclipboard(ag.KeySystem.URL)
-end,"Secondary",ax.Frame)
-end
-
-if ag.KeySystem.API then
-
-
-
-
-
-
-
-
-local aA=240
-local aB=false
-local aC=ae("Get key","key",nil,"Secondary",ax.Frame)
-
-local aD=ab.NewRoundFrame(99,"Squircle",{
-Size=UDim2.new(0,1,1,0),
-ThemeTag={
-ImageColor3="Text",
-},
-ImageTransparency=.9,
-})
-
-ac("Frame",{
-BackgroundTransparency=1,
-Size=UDim2.new(0,0,1,0),
-AutomaticSize="X",
-Parent=aC.Frame,
-},{
-aD,
-ac("UIPadding",{
-PaddingLeft=UDim.new(0,5),
-PaddingRight=UDim.new(0,5),
-})
-})
-
-local aE=ab.Image(
-"chevron-down",
-"chevron-down",
-0,
-"Temp",
-"KeySystem",
-true
-)
-
-aE.Size=UDim2.new(1,0,1,0)
-
-ac("Frame",{
-Size=UDim2.new(0,21,0,21),
-Parent=aC.Frame,
-BackgroundTransparency=1,
-},{
-aE
-})
-
-local aF=ab.NewRoundFrame(15,"Squircle",{
-Size=UDim2.new(1,0,0,0),
-AutomaticSize="Y",
-ThemeTag={
-ImageColor3="Background",
-},
-},{
-ac("UIPadding",{
-PaddingTop=UDim.new(0,5),
-PaddingLeft=UDim.new(0,5),
-PaddingRight=UDim.new(0,5),
-PaddingBottom=UDim.new(0,5),
-}),
-ac("UIListLayout",{
-FillDirection="Vertical",
-Padding=UDim.new(0,5),
-})
-})
-
-local b=ac("Frame",{
-BackgroundTransparency=1,
-Size=UDim2.new(0,aA,0,0),
-ClipsDescendants=true,
-AnchorPoint=Vector2.new(1,0),
-Parent=aC,
-Position=UDim2.new(1,0,1,15)
-},{
-aF
-})
-
-ac("TextLabel",{
-Text="Select Service",
-BackgroundTransparency=1,
-FontFace=Font.new(ab.Font,Enum.FontWeight.Medium),
-ThemeTag={TextColor3="Text"},
-TextTransparency=0.2,
-TextSize=16,
-Size=UDim2.new(1,0,0,0),
-AutomaticSize="Y",
-TextWrapped=true,
-TextXAlignment="Left",
-Parent=aF,
-},{
-ac("UIPadding",{
-PaddingTop=UDim.new(0,10),
-PaddingLeft=UDim.new(0,10),
-PaddingRight=UDim.new(0,10),
-PaddingBottom=UDim.new(0,10),
-})
-})
-
-for d,f in next,ag.KeySystem.API do
-local g=ag.WindUI.Services[f.Type]
-if g then
-local h={}
-for j,l in next,g.Args do
-table.insert(h,f[l])
-end
-
-local m=g.New(table.unpack(h))
-m.Type=f.Type
-table.insert(am,m)
-
-local p=ab.Image(
-f.Icon or g.Icon or Icons[f.Type]or"user",
-f.Icon or g.Icon or Icons[f.Type]or"user",
-0,
-"Temp",
-"KeySystem",
-true
-)
-p.Size=UDim2.new(0,24,0,24)
-
-local r=ab.NewRoundFrame(10,"Squircle",{
-Size=UDim2.new(1,0,0,0),
-ThemeTag={ImageColor3="Text"},
-ImageTransparency=1,
-Parent=aF,
-AutomaticSize="Y",
-},{
-ac("UIListLayout",{
-FillDirection="Horizontal",
-Padding=UDim.new(0,10),
-VerticalAlignment="Center",
-}),
-p,
-ac("UIPadding",{
-PaddingTop=UDim.new(0,10),
-PaddingLeft=UDim.new(0,10),
-PaddingRight=UDim.new(0,10),
-PaddingBottom=UDim.new(0,10),
-}),
-ac("Frame",{
-BackgroundTransparency=1,
-Size=UDim2.new(1,-34,0,0),
-AutomaticSize="Y",
-},{
-ac("UIListLayout",{
-FillDirection="Vertical",
-Padding=UDim.new(0,5),
-HorizontalAlignment="Center",
-}),
-ac("TextLabel",{
-Text=f.Title or g.Name,
-BackgroundTransparency=1,
-FontFace=Font.new(ab.Font,Enum.FontWeight.Medium),
-ThemeTag={TextColor3="Text"},
-TextTransparency=0.05,
-TextSize=18,
-Size=UDim2.new(1,0,0,0),
-AutomaticSize="Y",
-TextWrapped=true,
-TextXAlignment="Left",
-}),
-ac("TextLabel",{
-Text=f.Desc or"",
-BackgroundTransparency=1,
-FontFace=Font.new(ab.Font,Enum.FontWeight.Regular),
-ThemeTag={TextColor3="Text"},
-TextTransparency=0.2,
-TextSize=16,
-Size=UDim2.new(1,0,0,0),
-AutomaticSize="Y",
-TextWrapped=true,
-Visible=f.Desc and true or false,
-TextXAlignment="Left",
-})
-})
-},true)
-
-ab.AddSignal(r.MouseEnter,function()
-ad(r,0.08,{ImageTransparency=.95}):Play()
-end)
-ab.AddSignal(r.InputEnded,function()
-ad(r,0.08,{ImageTransparency=1}):Play()
-end)
-ab.AddSignal(r.MouseButton1Click,function()
-m.Copy()
-ag.WindUI:Notify{
-Title="Key System",
-Content="Key link copied to clipboard.",
-Image="key",
-}
-end)
-end
-end
-
-ab.AddSignal(aC.MouseButton1Click,function()
-if not aB then
-ad(b,.3,{Size=UDim2.new(0,aA,0,aF.AbsoluteSize.Y+1)},Enum.EasingStyle.Quint,Enum.EasingDirection.Out):Play()
-ad(aE,.3,{Rotation=180},Enum.EasingStyle.Quint,Enum.EasingDirection.Out):Play()
-else
-ad(b,.25,{Size=UDim2.new(0,aA,0,0)},Enum.EasingStyle.Quint,Enum.EasingDirection.Out):Play()
-ad(aE,.25,{Rotation=0},Enum.EasingStyle.Quint,Enum.EasingDirection.Out):Play()
-end
-aB=not aB
-end)
-
-end
-
-local function handleSuccess(aA)
-al:Close()()
-writefile((ag.Folder or"Temp").."/"..ah..".key",tostring(aA))
-task.wait(.4)
-ai(true)
-end
-
-local aA=ae("Submit","arrow-right",function()
-local aA=tostring(an or"empty")local aB=
-ag.Folder or ag.Title
-
-if ag.KeySystem.KeyValidator then
-local aC=ag.KeySystem.KeyValidator(aA)
-
-if aC then
-if ag.KeySystem.SaveKey then
-handleSuccess(aA)
-else
-al:Close()()
-task.wait(.4)
-ai(true)
-end
-else
-ag.WindUI:Notify{
-Title="Key System. Error",
-Content="Invalid key.",
-Icon="triangle-alert",
-}
-end
-elseif not ag.KeySystem.API then
-local aC=type(ag.KeySystem.Key)=="table"
-and table.find(ag.KeySystem.Key,aA)
-or ag.KeySystem.Key==aA
-
-if aC then
-if ag.KeySystem.SaveKey then
-handleSuccess(aA)
-else
-al:Close()()
-task.wait(.4)
-ai(true)
-end
-end
-else
-local aC,aD
-for aE,aF in next,am do
-local b,d=aF.Verify(aA)
-if b then
-aC,aD=true,d
-break
-end
-aD=d
-end
-
-if aC then
-handleSuccess(aA)
-else
-ag.WindUI:Notify{
-Title="Key System. Error",
-Content=aD,
-Icon="triangle-alert",
-}
-end
-end
-end,"Primary",ax)
-
-aA.AnchorPoint=Vector2.new(1,0.5)
-aA.Position=UDim2.new(1,0,0.5,0)
-
-
-
-
-
-
-
-
-
-
-al:Open()
-end
-
-return aa end function a.n()
+return{}end function a.n()
 
 
 
@@ -2527,335 +2006,12 @@ return map(ab,0,2560,8,56)
 end
 
 return{viewportPointToWorld,getOffset}end function a.o()
+return{}end function a.p()
+return setmetatable({},{__call=function()return{AddParent=function()end,Model={Transparency=1},SetVisibility=function()end,Frame=Instance.new"Frame"}end})end function a.q()
 
 
 
-local aa=(cloneref or clonereference or function(aa)return aa end)
-
-
-local ab=a.load'b'
-local ac=ab.New
-
-
-local ad,ae=unpack(a.load'n')
-local af=Instance.new("Folder",aa(game:GetService"Workspace").CurrentCamera)
-
-
-local function createAcrylic()
-local ag=ac("Part",{
-Name="Body",
-Color=Color3.new(0,0,0),
-Material=Enum.Material.Glass,
-Size=Vector3.new(1,1,0),
-Anchored=true,
-CanCollide=false,
-Locked=true,
-CastShadow=false,
-Transparency=0.98,
-},{
-ac("SpecialMesh",{
-MeshType=Enum.MeshType.Brick,
-Offset=Vector3.new(0,0,-1E-6),
-}),
-})
-
-return ag
-end
-
-
-local function createAcrylicBlur(ag)
-local ah={}
-
-ag=ag or 0.001
-local ai={
-topLeft=Vector2.new(),
-topRight=Vector2.new(),
-bottomRight=Vector2.new(),
-}
-local aj=createAcrylic()
-aj.Parent=af
-
-local function updatePositions(ak,al)
-ai.topLeft=al
-ai.topRight=al+Vector2.new(ak.X,0)
-ai.bottomRight=al+ak
-end
-
-local function render()
-local ak=aa(game:GetService"Workspace").CurrentCamera
-if ak then
-ak=ak.CFrame
-end
-local al=ak
-if not al then
-al=CFrame.new()
-end
-
-local am=al
-local an=ai.topLeft
-local ao=ai.topRight
-local ap=ai.bottomRight
-
-local aq=ad(an,ag)
-local ar=ad(ao,ag)
-local as=ad(ap,ag)
-
-local at=(ar-aq).Magnitude
-local au=(ar-as).Magnitude
-
-aj.CFrame=
-CFrame.fromMatrix((aq+as)/2,am.XVector,am.YVector,am.ZVector)
-aj.Mesh.Scale=Vector3.new(at,au,0)
-end
-
-local function onChange(ak)
-local al=ae()
-local am=ak.AbsoluteSize-Vector2.new(al,al)
-local an=ak.AbsolutePosition+Vector2.new(al/2,al/2)
-
-updatePositions(am,an)
-task.spawn(render)
-end
-
-local function renderOnChange()
-local ak=aa(game:GetService"Workspace").CurrentCamera
-if not ak then
-return
-end
-
-table.insert(ah,ak:GetPropertyChangedSignal"CFrame":Connect(render))
-table.insert(ah,ak:GetPropertyChangedSignal"ViewportSize":Connect(render))
-table.insert(ah,ak:GetPropertyChangedSignal"FieldOfView":Connect(render))
-task.spawn(render)
-end
-
-aj.Destroying:Connect(function()
-for ak,al in ah do
-pcall(function()
-al:Disconnect()
-end)
-end
-end)
-
-renderOnChange()
-
-return onChange,aj
-end
-
-return function(ag)
-local ah={}
-local ai,aj=createAcrylicBlur(ag)
-
-local ak=ac("Frame",{
-BackgroundTransparency=1,
-Size=UDim2.fromScale(1,1),
-})
-
-ab.AddSignal(ak:GetPropertyChangedSignal"AbsolutePosition",function()
-ai(ak)
-end)
-
-ab.AddSignal(ak:GetPropertyChangedSignal"AbsoluteSize",function()
-ai(ak)
-end)
-
-ah.AddParent=function(al)
-ab.AddSignal(al:GetPropertyChangedSignal"Visible",function()
-ah.SetVisibility(al.Visible)
-end)
-end
-
-ah.SetVisibility=function(al)
-aj.Transparency=al and 0.98 or 1
-end
-
-ah.Frame=ak
-ah.Model=aj
-
-return ah
-end end function a.p()
-
-
-
-local aa=a.load'b'
-local ab=a.load'o'
-
-local ac=aa.New
-
-return function(ad)
-local ae={}
-
-ae.Frame=ac("Frame",{
-Size=UDim2.fromScale(1,1),
-BackgroundTransparency=1,
-BackgroundColor3=Color3.fromRGB(255,255,255),
-BorderSizePixel=0,
-},{
-
-
-
-
-
-
-
-
-
-
-
-
-ac("UICorner",{
-CornerRadius=UDim.new(0,8),
-}),
-
-ac("Frame",{
-BackgroundTransparency=1,
-Size=UDim2.fromScale(1,1),
-Name="Background",
-ThemeTag={
-BackgroundColor3="AcrylicMain",
-},
-},{
-ac("UICorner",{
-CornerRadius=UDim.new(0,8),
-}),
-}),
-
-ac("Frame",{
-BackgroundColor3=Color3.fromRGB(255,255,255),
-BackgroundTransparency=1,
-Size=UDim2.fromScale(1,1),
-},{
-
-
-
-
-
-
-
-
-
-
-}),
-
-ac("ImageLabel",{
-Image="rbxassetid://9968344105",
-ImageTransparency=0.98,
-ScaleType=Enum.ScaleType.Tile,
-TileSize=UDim2.new(0,128,0,128),
-Size=UDim2.fromScale(1,1),
-BackgroundTransparency=1,
-},{
-ac("UICorner",{
-CornerRadius=UDim.new(0,8),
-}),
-}),
-
-ac("ImageLabel",{
-Image="rbxassetid://9968344227",
-ImageTransparency=0.9,
-ScaleType=Enum.ScaleType.Tile,
-TileSize=UDim2.new(0,128,0,128),
-Size=UDim2.fromScale(1,1),
-BackgroundTransparency=1,
-ThemeTag={
-ImageTransparency="AcrylicNoise",
-},
-},{
-ac("UICorner",{
-CornerRadius=UDim.new(0,8),
-}),
-}),
-
-ac("Frame",{
-BackgroundTransparency=1,
-Size=UDim2.fromScale(1,1),
-ZIndex=2,
-},{
-
-
-
-
-
-
-
-
-
-
-}),
-})
-
-
-local af
-
-task.wait()
-if ad.UseAcrylic then
-af=ab()
-
-af.Frame.Parent=ae.Frame
-ae.Model=af.Model
-ae.AddParent=af.AddParent
-ae.SetVisibility=af.SetVisibility
-end
-
-return ae,af
-end end function a.q()
-
-
-
-local aa=(cloneref or clonereference or function(aa)return aa end)
-
-
-local ab={
-AcrylicBlur=a.load'o',
-
-AcrylicPaint=a.load'p',
-}
-
-function ab.init()
-local ac=Instance.new"DepthOfFieldEffect"
-ac.FarIntensity=0
-ac.InFocusRadius=0.1
-ac.NearIntensity=1
-
-local ad={}
-
-function ab.Enable()
-for ae,af in pairs(ad)do
-af.Enabled=false
-end
-ac.Parent=aa(game:GetService"Lighting")
-end
-
-function ab.Disable()
-for ae,af in pairs(ad)do
-af.Enabled=af.enabled
-end
-ac.Parent=nil
-end
-
-local function registerDefaults()
-local function register(ae)
-if ae:IsA"DepthOfFieldEffect"then
-ad[ae]={enabled=ae.Enabled}
-end
-end
-
-for ae,af in pairs(aa(game:GetService"Lighting"):GetChildren())do
-register(af)
-end
-
-if aa(game:GetService"Workspace").CurrentCamera then
-for ag,ah in pairs(aa(game:GetService"Workspace").CurrentCamera:GetChildren())do
-register(ah)
-end
-end
-end
-
-registerDefaults()
-ab.Enable()
-end
-
-return ab end function a.r()
+return{init=function()end,Enable=function()end,Disable=function()end}end function a.r()
 
 local aa={}
 
@@ -3254,7 +2410,7 @@ Nebula = {
     Button = Color3.fromHex("#6B70F5"),
     Icon = Color3.fromHex("#A3CEF1"),
 },
-                    
+
 MonokaiPro={
 Name="Monokai Pro",
 
@@ -3782,366 +2938,7 @@ end
 
 
 return aa end function a.w()
-local aa=(cloneref or clonereference or function(aa)return aa end)
-
-
-local ab=aa(game:GetService"HttpService")
-
-local ac
-
-local ad
-ad={
-Folder=nil,
-Path=nil,
-Configs={},
-Parser={
-Colorpicker={
-Save=function(ae)
-return{
-__type=ae.__type,
-value=ae.Default:ToHex(),
-transparency=ae.Transparency or nil,
-}
-end,
-Load=function(ae,af)
-if ae and ae.Update then
-ae:Update(Color3.fromHex(af.value),af.transparency or nil)
-end
-end
-},
-Dropdown={
-Save=function(ae)
-return{
-__type=ae.__type,
-value=ae.Value,
-}
-end,
-Load=function(ae,af)
-if ae and ae.Select then
-ae:Select(af.value)
-end
-end
-},
-Input={
-Save=function(ae)
-return{
-__type=ae.__type,
-value=ae.Value,
-}
-end,
-Load=function(ae,af)
-if ae and ae.Set then
-ae:Set(af.value)
-end
-end
-},
-Keybind={
-Save=function(ae)
-return{
-__type=ae.__type,
-value=ae.Value,
-}
-end,
-Load=function(ae,af)
-if ae and ae.Set then
-ae:Set(af.value)
-end
-end
-},
-Slider={
-Save=function(ae)
-return{
-__type=ae.__type,
-value=ae.Value.Default,
-}
-end,
-Load=function(ae,af)
-if ae and ae.Set then
-ae:Set(tonumber(af.value))
-end
-end
-},
-Toggle={
-Save=function(ae)
-return{
-__type=ae.__type,
-value=ae.Value,
-}
-end,
-Load=function(ae,af)
-if ae and ae.Set then
-ae:Set(af.value)
-end
-end
-},
-}
-}
-
-function ad.Init(ae,af)
-if not af.Folder then
-warn"[ WindUI.ConfigManager ] Window.Folder is not specified."
-return false
-end
-
-ac=af
-ad.Folder=ac.Folder
-ad.Path="WindUI/"..tostring(ad.Folder).."/config/"
-
-if not isfolder("WindUI/"..ad.Folder)then
-makefolder("WindUI/"..ad.Folder)
-if not isfolder("WindUI/"..ad.Folder.."/config/")then
-makefolder("WindUI/"..ad.Folder.."/config/")
-end
-end
-
-local ag=ad:AllConfigs()
-
-for ah,ai in next,ag do
-if isfile and readfile and isfile(ai..".json")then
-ad.Configs[ai]=readfile(ai..".json")
-end
-end
-
-return ad
-end
-
-function ad.CreateConfig(ae,af,ag)
-local ah={
-Path=ad.Path..af..".json",
-Elements={},
-CustomData={},
-AutoLoad=ag or false,
-Version=1.2,
-}
-
-if not af then
-return false,"No config file is selected"
-end
-
-function ah.SetAsCurrent(ai)
-ac:SetCurrentConfig(ah)
-end
-
-function ah.Register(ai,aj,ak)
-ah.Elements[aj]=ak
-end
-
-function ah.Set(ai,aj,ak)
-ah.CustomData[aj]=ak
-end
-
-function ah.Get(ai,aj)
-return ah.CustomData[aj]
-end
-
-function ah.SetAutoLoad(ai,aj)
-ah.AutoLoad=aj
-end
-
-function ah.Save(ai)
-if ac.PendingFlags then
-for aj,ak in next,ac.PendingFlags do
-ah:Register(aj,ak)
-end
-end
-
-local aj={
-__version=ah.Version,
-__elements={},
-__autoload=ah.AutoLoad,
-__custom=ah.CustomData
-}
-
-for ak,al in next,ah.Elements do
-if ad.Parser[al.__type]then
-aj.__elements[tostring(ak)]=ad.Parser[al.__type].Save(al)
-end
-end
-
-local am=ab:JSONEncode(aj)
-if writefile then
-writefile(ah.Path,am)
-end
-
-return aj
-end
-
-function ah.Load(ai)
-if isfile and not isfile(ah.Path)then
-return false,"Config file does not exist"
-end
-
-local aj,ak=pcall(function()
-local aj=readfile or function()
-warn"[ WindUI.ConfigManager ] The config system doesn't work in the studio."
-return nil
-end
-return ab:JSONDecode(aj(ah.Path))
-end)
-
-if not aj then
-return false,"Failed to parse config file"
-end
-
-if not ak.__version then
-local al={
-__version=ah.Version,
-__elements=ak,
-__custom={}
-}
-ak=al
-end
-
-if ac.PendingFlags then
-for al,am in next,ac.PendingFlags do
-ah:Register(al,am)
-end
-end
-
-for al,am in next,(ak.__elements or{})do
-if ah.Elements[al]and ad.Parser[am.__type]then
-task.spawn(function()
-ad.Parser[am.__type].Load(ah.Elements[al],am)
-end)
-end
-end
-
-ah.CustomData=ak.__custom or{}
-
-return ah.CustomData
-end
-
-function ah.Delete(ai)
-if not delfile then
-return false,"delfile function is not available"
-end
-
-if not isfile(ah.Path)then
-return false,"Config file does not exist"
-end
-
-local aj,ak=pcall(function()
-delfile(ah.Path)
-end)
-
-if not aj then
-return false,"Failed to delete config file: "..tostring(ak)
-end
-
-ad.Configs[af]=nil
-
-if ac.CurrentConfig==ah then
-ac.CurrentConfig=nil
-end
-
-return true,"Config deleted successfully"
-end
-
-function ah.GetData(ai)
-return{
-elements=ah.Elements,
-custom=ah.CustomData,
-autoload=ah.AutoLoad
-}
-end
-
-
-if isfile(ah.Path)then
-local ai,aj=pcall(function()
-return ab:JSONDecode(readfile(ah.Path))
-end)
-
-if ai and aj and aj.__autoload then
-ah.AutoLoad=true
-
-task.spawn(function()
-task.wait(0.5)
-local ak,al=pcall(function()
-return ah:Load()
-end)
-if ak then
-if ac.Debug then print("[ WindUI.ConfigManager ] AutoLoaded config: "..af)end
-else
-warn("[ WindUI.ConfigManager ] Failed to AutoLoad config: "..af.." - "..tostring(al))
-end
-end)
-end
-end
-
-
-ah:SetAsCurrent()
-ad.Configs[af]=ah
-return ah
-end
-
-function ad.Config(ae,af,ag)
-return ad:CreateConfig(af,ag)
-end
-
-function ad.GetAutoLoadConfigs(ae)
-local af={}
-
-for ag,ah in pairs(ad.Configs)do
-if ah.AutoLoad then
-table.insert(af,ag)
-end
-end
-
-return af
-end
-
-function ad.DeleteConfig(ae,af)
-if not delfile then
-return false,"delfile function is not available"
-end
-
-local ag=ad.Path..af..".json"
-
-if not isfile(ag)then
-return false,"Config file does not exist"
-end
-
-local ah,ai=pcall(function()
-delfile(ag)
-end)
-
-if not ah then
-return false,"Failed to delete config file: "..tostring(ai)
-end
-
-ad.Configs[af]=nil
-
-if ac.CurrentConfig and ac.CurrentConfig.Path==ag then
-ac.CurrentConfig=nil
-end
-
-return true,"Config deleted successfully"
-end
-
-function ad.AllConfigs(ae)
-if not listfiles then return{}end
-
-local af={}
-if not isfolder(ad.Path)then
-makefolder(ad.Path)
-return af
-end
-
-for ag,ah in next,listfiles(ad.Path)do
-local ai=ah:match"([^\\/]+)%.json$"
-if ai then
-table.insert(af,ai)
-end
-end
-
-return af
-end
-
-function ad.GetConfig(ae,af)
-return ad.Configs[af]
-end
-
-return ad end function a.x()
+return{Init=function()return{}end}end function a.x()
 local aa={}
 
 local ab=a.load'b'
@@ -4296,7 +3093,7 @@ af.Title,
 0,
 af.Folder,
 "OpenButton",
-true,
+nil,
 af.IconThemed
 )
 ah.Size=UDim2.new(0,22,0,22)
@@ -8843,8 +7640,6 @@ end)
 
 if ax then
 ah.PendingConfigData[ar.Flag]=nil
-else
-warn("[ WindUI ] Failed to apply pending config for '"..ar.Flag.."': "..tostring(ay))
 end
 end)
 end
@@ -8926,7 +7721,7 @@ end,
 local aa=(cloneref or clonereference or function(aa)return aa end)
 
 aa(game:GetService"UserInputService")
-local ae=game.Players.LocalPlayer:GetMouse()
+local ae=aa(game:GetService"Players").LocalPlayer:GetMouse()
 
 local af=a.load'b'
 local ah=af.New
@@ -10530,7 +9325,7 @@ local aA
 if as.User then
 local function GetUserThumb()local
 aB, aC=aa(game:GetService"Players"):GetUserThumbnailAsync(
-as.User.Anonymous and 1 or game.Players.LocalPlayer.UserId,
+as.User.Anonymous and 1 or aa(game:GetService"Players").LocalPlayer.UserId,
 Enum.ThumbnailType.HeadShot,
 Enum.ThumbnailSize.Size420x420
 )
@@ -10597,7 +9392,7 @@ AutomaticSize="XY",
 BackgroundTransparency=1,
 },{
 ak("TextLabel",{
-Text=as.User.Anonymous and"Anonymous"or game.Players.LocalPlayer.DisplayName,
+Text=as.User.Anonymous and"Anonymous"or aa(game:GetService"Players").LocalPlayer.DisplayName,
 TextSize=17,
 ThemeTag={
 TextColor3="Text",
@@ -10611,7 +9406,7 @@ TextXAlignment="Left",
 Name="DisplayName"
 }),
 ak("TextLabel",{
-Text=as.User.Anonymous and"anonymous"or game.Players.LocalPlayer.Name,
+Text=as.User.Anonymous and"anonymous"or aa(game:GetService"Players").LocalPlayer.Name,
 TextSize=15,
 TextTransparency=.6,
 ThemeTag={
@@ -10657,8 +9452,8 @@ function as.User.SetAnonymous(aB,aC)
 if aC~=false then aC=true end
 as.User.Anonymous=aC
 aA.UserIcon.ImageLabel.Image=GetUserThumb()
-aA.UserIcon.Frame.DisplayName.Text=aC and"Anonymous"or game.Players.LocalPlayer.DisplayName
-aA.UserIcon.Frame.UserName.Text=aC and"anonymous"or game.Players.LocalPlayer.Name
+aA.UserIcon.Frame.DisplayName.Text=aC and"Anonymous"or aa(game:GetService"Players").LocalPlayer.DisplayName
+aA.UserIcon.Frame.UserName.Text=aC and"anonymous"or aa(game:GetService"Players").LocalPlayer.Name
 end
 
 if as.User.Enabled then
@@ -10713,20 +9508,13 @@ local f,g=pcall(function()
 local f=aj.Request{Url=aF,Method="GET",Headers={["User-Agent"]="Roblox/Exploit"}}
 writefile(d,f.Body)
 end)
-if not f then
-warn("[ WindUI.Window.Background ] Failed to download video: "..tostring(g))
-return
-end
+if not f then return end
 end
 
 local f,g=pcall(function()
 return getcustomasset(d)
 end)
-if not f then
-warn("[ WindUI.Window.Background ] Failed to load custom asset: "..tostring(g))
-return
-end
-warn"[ WindUI.Window.Background ] VideoFrame may not work with custom video"
+if not f then return end
 aF=g
 end
 
@@ -10750,19 +9538,13 @@ local f,g=pcall(function()
 local f=aj.Request{Url=b,Method="GET",Headers={["User-Agent"]="Roblox/Exploit"}}
 writefile(d,f.Body)
 end)
-if not f then
-warn("[ Window.Background ] Failed to download image: "..tostring(g))
-return
-end
+if not f then return end
 end
 
 local f,g=pcall(function()
 return getcustomasset(d)
 end)
-if not f then
-warn("[ Window.Background ] Failed to load custom asset: "..tostring(g))
-return
-end
+if not f then return end
 
 aE=ak("ImageLabel",{
 BackgroundTransparency=1,
@@ -11152,7 +9934,7 @@ as.Title,
 0,
 as.Folder,
 "Window",
-true,
+nil,
 as.IconThemed,
 "WindowTopbarIcon"
 )
@@ -12054,7 +10836,7 @@ local af=ae(game:GetService"HttpService")
 local ah=ae(game:GetService"Players")
 local aj=ae(game:GetService"CoreGui")local ak=
 
-ah.LocalPlayer or nil
+ah.LocalPlayer or ah.PlayerAdded:Wait()
 
 local al=af:JSONDecode(a.load'i')
 if al then
@@ -12076,8 +10858,25 @@ local ar=a.load'q'
 
 
 local as=protectgui or(syn and syn.protect_gui)or function()end
-
-local au=gethui and gethui()or(aj or game.Players.LocalPlayer:WaitForChild"PlayerGui")
+local _gethui=gethui or function()return aj end
+local function _safeParentUI(inst,parent)
+local ok=pcall(function()
+local dest
+if not parent then dest=aj
+elseif type(parent)=="function" then dest=parent()
+else dest=parent end
+inst.Parent=dest
+end)
+if not(ok and inst.Parent)then
+local _lp=ak or(game:GetService"Players").LocalPlayer
+if _lp then inst.Parent=_lp:WaitForChild("PlayerGui",math.huge) end
+end
+end
+local function _parentUI(ui,skipHidden)
+if skipHidden then _safeParentUI(ui,aj)return end
+pcall(as,ui)
+_safeParentUI(ui,_gethui)
+end
 
 local av=ap("UIScale",{
 Scale=aa.Scale,
@@ -12086,8 +10885,7 @@ Scale=aa.Scale,
 aa.UIScaleObj=av
 
 aa.ScreenGui=ap("ScreenGui",{
-Name="WindUI",
-Parent=au,
+Name="UIFrame",
 IgnoreGuiInset=true,
 ScreenInsets="None",
 },{
@@ -12099,11 +10897,6 @@ Name="Window"
 
 
 
-
-
-ap("Folder",{
-Name="KeySystem"
-}),
 ap("Folder",{
 Name="Popups"
 }),
@@ -12113,18 +10906,16 @@ Name="ToolTips"
 })
 
 aa.NotificationGui=ap("ScreenGui",{
-Name="WindUI/Notifications",
-Parent=au,
+Name="UINotifications",
 IgnoreGuiInset=true,
 })
 aa.DropdownGui=ap("ScreenGui",{
-Name="WindUI/Dropdowns",
-Parent=au,
+Name="UIDropdowns",
 IgnoreGuiInset=true,
 })
-as(aa.ScreenGui)
-as(aa.NotificationGui)
-as(aa.DropdownGui)
+_parentUI(aa.ScreenGui)
+_parentUI(aa.NotificationGui)
+_parentUI(aa.DropdownGui)
 
 ao.Init(aa)
 
@@ -12269,22 +11060,19 @@ aa:SetLanguage(ao.Language)
 function aa.CreateWindow(ax,ay)
 local az=a.load'Y'
 
-if not isfolder"WindUI"then
-makefolder"WindUI"
-end
+if isfolder and makefolder then
+if not isfolder"WindUI"then makefolder"WindUI" end
 if ay.Folder then
-makefolder(ay.Folder)
+if not isfolder(ay.Folder)then makefolder(ay.Folder) end
 else
-makefolder(ay.Title)
+if not isfolder(ay.Title)then makefolder(ay.Title) end
+end
 end
 
 ay.WindUI=aa
 ay.Parent=aa.ScreenGui.Window
 
-if aa.Window then
-warn"You cannot create more than one window"
-return
-end
+if aa.Window then return end
 
 local aA=true
 
@@ -12294,80 +11082,6 @@ local aB=aa.Themes[ay.Theme or"Dark"]
 ao.SetTheme(aB)
 
 
-local aC=gethwid or function()
-return ah.LocalPlayer.UserId
-end
-
-local aD=aC()
-
-if ay.KeySystem then
-aA=false
-
-local function loadKeysystem()
-am.new(ay,aD,function(aE)aA=aE end)
-end
-
-local aE=(ay.Folder or"Temp").."/"..aD..".key"
-
-if ay.KeySystem.KeyValidator then
-if ay.KeySystem.SaveKey and isfile(aE)then
-local aF=readfile(aE)
-local b=ay.KeySystem.KeyValidator(aF)
-
-if b then
-aA=true
-else
-loadKeysystem()
-end
-else
-loadKeysystem()
-end
-elseif not ay.KeySystem.API then
-if ay.KeySystem.SaveKey and isfile(aE)then
-local aF=readfile(aE)
-local b=(type(ay.KeySystem.Key)=="table")
-and table.find(ay.KeySystem.Key,aF)
-or tostring(ay.KeySystem.Key)==tostring(aF)
-
-if b then
-aA=true
-else
-loadKeysystem()
-end
-else
-loadKeysystem()
-end
-else
-if isfile(aE)then
-local aF=readfile(aE)
-local b=false
-
-for d,f in next,ay.KeySystem.API do
-local g=aa.Services[f.Type]
-if g then
-local h={}
-for j,l in next,g.Args do
-table.insert(h,f[l])
-end
-
-local m=g.New(table.unpack(h))
-local p=m.Verify(aF)
-if p then
-b=true
-break
-end
-end
-end
-
-aA=b
-if not b then loadKeysystem()end
-else
-loadKeysystem()
-end
-end
-
-repeat task.wait()until aA
-end
 
 local aE=az(ay)
 
