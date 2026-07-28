@@ -76,7 +76,7 @@ local h=b(game:GetService"HttpService")local i=
 
 d.Heartbeat
 
-local j="https://raw.githubusercontent.com/deividcomsono/lucide-roblox-direct/refs/heads/main/source.lua"
+local j="https://upio-github-mirror.pages.dev/source.lua"
 
 local _lOk,l=pcall(function()
 local _src=game.HttpGetAsync and game:HttpGetAsync(j)or h:GetAsync(j)
