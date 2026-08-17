@@ -3491,6 +3491,7 @@ Justify=af.Justify or"Between",
 UIPadding=af.Window.ElementConfig.UIPadding,
 UICorner=af.Window.ElementConfig.UICorner,
 UIElements={},
+LockedTitle=af.LockedTitle or"Locked Needs Premium",
 
 Index=af.Index
 }
@@ -3644,7 +3645,7 @@ ap.ImageLabel.ImageColor3=Color3.new(1,1,1)
 ap.ImageLabel.ImageTransparency=.4
 
 local aq=ab("TextLabel",{
-Text="Locked",
+Text=ag.LockedTitle,
 TextSize=18,
 FontFace=Font.new(aa.Font,Enum.FontWeight.Medium),
 AutomaticSize="XY",
@@ -4129,6 +4130,7 @@ Color=ae.Color,
 Justify=ae.Justify or"Between",
 IconAlign=ae.IconAlign or"Right",
 Locked=ae.Locked or false,
+LockedTitle=ae.LockedTitle or nil,
 Callback=ae.Callback or function()end,
 UIElements={}
 }
@@ -4138,6 +4140,7 @@ local ag=true
 af.ButtonFrame=a.load'z'{
 Title=af.Title,
 Desc=af.Desc,
+LockedTitle=af.LockedTitle,
 Parent=ae.Parent,
 
 
@@ -4589,12 +4592,14 @@ Value=ah.Value,
 Icon=ah.Icon or nil,
 IconSize=ah.IconSize or 23,
 Type=ah.Type or"Toggle",
+LockedTitle=ah.LockedTitle or nil,
 Callback=ah.Callback or function()end,
 UIElements={}
 }
 ai.ToggleFrame=a.load'z'{
 Title=ai.Title,
 Desc=ai.Desc,
+LockedTitle=ai.LockedTitle,
 
 
 
@@ -5855,6 +5860,7 @@ __type="Dropdown",
 Title=an.Title or"Dropdown",
 Desc=an.Desc or nil,
 Locked=an.Locked or false,
+LockedTitle=an.LockedTitle or nil,
 Values=an.Values or{},
 MenuWidth=an.MenuWidth,
 Value=an.Value,
@@ -5880,6 +5886,7 @@ local ap=true
 ao.DropdownFrame=a.load'z'{
 Title=ao.Title,
 Desc=ao.Desc,
+LockedTitle=ao.LockedTitle,
 Parent=an.Parent,
 TextOffset=ao.Callback and ao.Width or 20,
 Hover=not ao.Callback and true or false,
