@@ -14,6 +14,7 @@
     License: MIT
 ]]
 
+
 if not game:IsLoaded() then game.Loaded:Wait() end
 
 local a a={cache={}, load=function(b)if not a.cache[b]then a.cache[b]={c=a[b]()}end return a.cache[b].c end}do function a.a()return{
@@ -489,9 +490,13 @@ p.UpdateLang()
 end
 
 function p.Icon(r,u)
-if u==false or not l then return nil end
+local z={ImageRectPosition=Vector2.new(0,0),ImageRectSize=Vector2.new(0,0)}
+local function EmptyIcon()
+return setmetatable({Url="",ImageRectOffset=z.ImageRectPosition,ImageRectSize=z.ImageRectSize},{__index=function(t,k)if k==1 then return "" elseif k==2 then return z end end})
+end
+if u==false or not l then return EmptyIcon() end
 local ok,data=pcall(l.GetAsset,r)
-if not(ok and data)then return nil end
+if not(ok and data)then return EmptyIcon() end
 return setmetatable({Url=data.Url,ImageRectOffset=data.ImageRectOffset,ImageRectSize=data.ImageRectSize},{__index=function(t,k)if k==1 then return data.Url elseif k==2 then return{ImageRectPosition=data.ImageRectOffset,ImageRectSize=data.ImageRectSize}end end})
 end
 
